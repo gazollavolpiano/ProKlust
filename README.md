@@ -10,4 +10,4 @@
 - Install the devtools package: install.packages("devtools")
 - Load devtools: library(devtools)
 - Install this package: install_github("camilagazolla/ProKlust")
-Done! You can then load it by library(ProKlust).
+- Done! You can then load it by: library(ProKlust).
