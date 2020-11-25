@@ -11,3 +11,8 @@
 - Load devtools: library(devtools)
 - Install this package: install_github("camilagazolla/ProKlust")
 - Done! You can then load it by: library(ProKlust).
+
+### How to use
+
+- Use function prokluster to obtain the clusters.
+- Use function plotc to plot.
