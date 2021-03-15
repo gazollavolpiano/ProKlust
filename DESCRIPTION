@@ -1,7 +1,7 @@
 Package: ProKlust
 Type: Package
 Title: Prokariotic Clustering based on Genome and Sequence Identity/Similarity Matrices
-Version: 0.1
+Version: 0.1.1
 Authors@R: as.person(c(
     "Camila Gazolla Volpiano <gazollavolpiano@gmail.com> [aut, cre]", 
     "Pedro Durayski Saccilotto <pedro.saccilotto@gmail.com> [aut]"
