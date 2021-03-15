@@ -29,20 +29,42 @@ mirrorMatrix <- function(matrix)
 }
 
 # Open matrix files and compute cutoffs to combine them
-matricesCombination <- function(filenames, cutoffs)
+matricesCombination <- function(files, cutoffs)
 {
-  if (length(filenames) == length(cutoffs) && !is.na(filenames) && !is.na(cutoffs))
+  isFilenames <- is.character(files)
+  isList <- is.list(files)
+  numberOfFiles <- length(files)
+  numberOfCutoffs <- length(cutoffs)
+
+  if (((isFilenames && numberOfFiles == numberOfCutoffs) || isList && (numberOfFiles == numberOfCutoffs || numberOfCutoffs == 1))
+      && !is.na(files)
+      && !is.na(cutoffs))
   {
-    if (is.na(length(filenames)))
+    if (is.na(numberOfFiles))
     {
-      currentMatrix <- read.table(file = filenames, header = T, row.names = 1, sep = "\t")
+      currentMatrix <- read.table(file = files, header = T, row.names = 1, sep = "\t")
       currentBooleanMatrix <- makeMatrixBoolean(currentMatrix, cutoffs)
       return(mirrorMatrix(currentBooleanMatrix))
     }
 
-    for (i in 1:length(filenames))
+    for (i in 1:numberOfCutoffs)
     {
-      currentMatrix <- read.table(file = filenames[i], header = T, row.names = 1, sep = "\t")
+      if (isList)
+      {
+        if (numberOfCutoffs == 1)
+        {
+          currentMatrix <- files
+        }
+        else
+        {
+          currentMatrix <- files[[i]]
+        }
+      }
+      else
+      {
+        currentMatrix <- read.table(file = files[i], header = T, row.names = 1, sep = "\t")
+      }
+
       currentBooleanMatrix <- makeMatrixBoolean(currentMatrix, cutoffs[i])
 
       if (i == 1)
@@ -59,7 +81,7 @@ matricesCombination <- function(filenames, cutoffs)
   }
   else
   {
-    stop("filenames and cutoffs must have the same number of elements.")
+    stop("Files and cutoffs must have the same number of elements.")
   }
 }
 
@@ -295,7 +317,7 @@ plotc <- function(igraph, plotFontSize = 10, plotLinkDistance = 60, nodeAttracti
 #'
 #' Obtains and filters clusters of the identity/similarity matrices, identifying MCE by configuring settable cut-off points for each of the multiple matrices entries. Returns relevant graph information.
 #'
-#' @param filenames Obligatory tabbed-delimited pairwise identity/similarity matrix input file(s) name(s). Either a character vector or a vector of character vectors. If it's the second option, then the file name sequence must match the sequence of the cutoff list.
+#' @param files Obligatory tabbed-delimited pairwise identity/similarity matrix input file(s). If it's a file name, it must be either a character vector or a vector of character vectors. If it's the second option, then the file name sequence must match the sequence of the cutoff list. It could also be the list/dataframe, or a list of dataframes/list. Be advised that vector of dataframes will have erroneous results, and that the list size must match the number of cutoffs.
 #' @param cutoffs Obligatory cutoff number for the given input file(s). Either a single number or a vector of numbers. If it's the second option, then the file name sequence must match the sequence of the cutoff list. Must be given special attention to format the cutoff with the given matrix.
 #' @param nodesDictionary Optional annotation table text file with a specific format: each line must be "(previous name)<Tab>(new name)<New Line>", where (previous name) and (new name) can be alphanumeric and some special characters.
 #' @param nodesPreviousNames Optional vector containing character vectors that represent the previous names (to be renamed) of the graph nodes. Must be of the same size as nodesTranslatedNames.
@@ -315,23 +337,32 @@ plotc <- function(igraph, plotFontSize = 10, plotLinkDistance = 60, nodeAttracti
 #' components: Contains the isolated nodes or groups formed of complete graphs.
 #'
 #' @examples
-#' // Example 1
-#' basicResult <- prokluster(filenames = "ANIb_percentage_identity.tab", cutoffs = 0.9)
+#' // Example 1.1
+#' basicResult1.1 <- prokluster(files = "ANIb_percentage_identity.tab", cutoffs = 0.9)
 #'
-#' // Example 2
+#' // Example 1.2
+#' percentage <- read.table(file = "ANIb_percentage_identity.tab", header = T, row.names = 1, sep = "\t")
+#' basicResult1.2 <- prokluster(files = percentage, cutoffs = 0.9)
+#'
+#' // Example 2.1
 #' files <- c("ANIb_percentage_identity.tab", "ANIb_alignment_coverage.tab")
 #' thresholds <- c(0.95, 0.70)
-#' renamedResults1 <- prokluster(filenames = files, cutoffs = thresholds, nodesDictionary = "dictionary.tab", filterRemoveIsolated = TRUE)
+#' renamedResults1.1 <- prokluster(files = files, cutoffs = thresholds, nodesDictionary = "dictionary.tab", filterRemoveIsolated = TRUE)
+#'
+#' // Example 2-2
+#' coverage <- read.table(file = "ANIb_alignment_coverage.tab", header = T, row.names = 1, sep = "\t")
+#' filesList <- list(percentage, coverage)
+#' basicResult2.2 <- prokluster(files = filesList, cutoffs = thresholds)
 #'
 #' // Example 3
-#' renamedResults2 <- prokluster(filenames = files, cutoffs = thresholds, nodesDictionary = "dictionary.tab", filterDifferentNamesConnected = TRUE)
+#' renamedResults2 <- prokluster(files = files, cutoffs = thresholds, nodesDictionary = "dictionary.tab", filterDifferentNamesConnected = TRUE)
 #'
 #' // Example 4
 #' nodesNames <- read.table(file= "dictionary.tab", sep = "\t", header = F, stringsAsFactors=FALSE)
-#' renamedResults3 <- prokluster(filenames = files, cutoffs = thresholds, nodesPreviousNames = nodesNames$V1, nodesTranslatedNames = nodesNames$V2, filterSameNamesNotConnected = T)
+#' renamedResults3 <- prokluster(files = files, cutoffs = thresholds, nodesPreviousNames = nodesNames$V1, nodesTranslatedNames = nodesNames$V2, filterSameNamesNotConnected = T)
 #'
 #' @export
-prokluster <- function(filenames,
+prokluster <- function(files,
                   cutoffs,
                   nodesDictionary = NULL,
                   nodesPreviousNames = NULL,
@@ -358,11 +389,19 @@ prokluster <- function(filenames,
     stop("Incompatible filter combination.")
   }
 
-  finalMatrix <- matricesCombination(filenames, cutoffs)
+  finalMatrix <- matricesCombination(files, cutoffs)
 
   if (!is.null(nodesDictionary))
   {
-    nodesNames <- read.table(file = nodesDictionary, sep = "\t", header = F, stringsAsFactors=FALSE)
+    if (is.data.frame(nodesDictionary))
+    {
+      nodesNames <- nodesDictionary
+    }
+    else
+    {
+      nodesNames <- read.table(file = nodesDictionary, sep = "\t", header = F, stringsAsFactors=FALSE)
+    }
+
     nodesPreviousNames <- nodesNames$V1
     nodesTranslatedNames <-  nodesNames$V2
   }
