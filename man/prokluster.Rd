@@ -5,7 +5,7 @@
 \title{Compute prokariotic clusters for the given matrices and cutoffs.}
 \usage{
 prokluster(
-  filenames,
+  files,
   cutoffs,
   nodesDictionary = NULL,
   nodesPreviousNames = NULL,
@@ -18,7 +18,7 @@ prokluster(
 )
 }
 \arguments{
-\item{filenames}{Obligatory tabbed-delimited pairwise identity/similarity matrix input file(s) name(s). Either a character vector or a vector of character vectors. If it's the second option, then the file name sequence must match the sequence of the cutoff list.}
+\item{files}{Obligatory tabbed-delimited pairwise identity/similarity matrix input file(s). If it's a file name, it must be either a character vector or a vector of character vectors. If it's the second option, then the file name sequence must match the sequence of the cutoff list. It could also be the list/dataframe, or a list of dataframes/list. Be advised that vector of dataframes will have erroneous results, and that the list size must match the number of cutoffs.}
 
 \item{cutoffs}{Obligatory cutoff number for the given input file(s). Either a single number or a vector of numbers. If it's the second option, then the file name sequence must match the sequence of the cutoff list. Must be given special attention to format the cutoff with the given matrix.}
 
@@ -51,19 +51,28 @@ components: Contains the isolated nodes or groups formed of complete graphs.
 Obtains and filters clusters of the identity/similarity matrices, identifying MCE by configuring settable cut-off points for each of the multiple matrices entries. Returns relevant graph information.
 }
 \examples{
-// Example 1
-basicResult <- prokluster(filenames = "ANIb_percentage_identity.tab", cutoffs = 0.9)
+// Example 1.1
+basicResult1.1 <- prokluster(files = "ANIb_percentage_identity.tab", cutoffs = 0.9)
 
-// Example 2
+// Example 1.2
+percentage <- read.table(file = "ANIb_percentage_identity.tab", header = T, row.names = 1, sep = "\t")
+basicResult1.2 <- prokluster(files = percentage, cutoffs = 0.9)
+
+// Example 2.1
 files <- c("ANIb_percentage_identity.tab", "ANIb_alignment_coverage.tab")
 thresholds <- c(0.95, 0.70)
-renamedResults1 <- prokluster(filenames = files, cutoffs = thresholds, nodesDictionary = "dictionary.tab", filterRemoveIsolated = TRUE)
+renamedResults1.1 <- prokluster(files = files, cutoffs = thresholds, nodesDictionary = "dictionary.tab", filterRemoveIsolated = TRUE)
+
+// Example 2-2
+coverage <- read.table(file = "ANIb_alignment_coverage.tab", header = T, row.names = 1, sep = "\t")
+filesList <- list(percentage, coverage)
+basicResult2.2 <- prokluster(files = filesList, cutoffs = thresholds)
 
 // Example 3
-renamedResults2 <- prokluster(filenames = files, cutoffs = thresholds, nodesDictionary = "dictionary.tab", filterDifferentNamesConnected = TRUE)
+renamedResults2 <- prokluster(files = files, cutoffs = thresholds, nodesDictionary = "dictionary.tab", filterDifferentNamesConnected = TRUE)
 
 // Example 4
 nodesNames <- read.table(file= "dictionary.tab", sep = "\t", header = F, stringsAsFactors=FALSE)
-renamedResults3 <- prokluster(filenames = files, cutoffs = thresholds, nodesPreviousNames = nodesNames$V1, nodesTranslatedNames = nodesNames$V2, filterSameNamesNotConnected = T)
+renamedResults3 <- prokluster(files = files, cutoffs = thresholds, nodesPreviousNames = nodesNames$V1, nodesTranslatedNames = nodesNames$V2, filterSameNamesNotConnected = T)
 
 }
