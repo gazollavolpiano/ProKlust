@@ -3,11 +3,11 @@
 ProKlust could be employed to analyze any identity/similarity matrix, such as ANI or barcoding gene identity. Additionally, it contains useful filter options to deal with taxonomical data. 
 
 ### How to install
-
-- Install the devtools package: install.packages("devtools")
-- Load devtools: library(devtools)
-- Install this package: install_github("camilagazolla/ProKlust")
-- Done! You can then load it by: library(ProKlust).
+```
+library(devtools)
+install_github("camilagazolla/ProKlust") # Install this package
+library(ProKlust)
+```
 
 ### Package dependencies
 - [igraph](https://cran.r-project.org/web/packages/igraph/index.html)
@@ -39,25 +39,30 @@ A genome/gene that is part of a component does not necessarily share identity/si
 
 #### Examples
 ```
-#Example 1
-basicResult <- prokluster(filenames = "ANIb_percentage_identity.tab", cutoffs = 0.9)
+#Example 1.1
+basicResult1.1 <- prokluster(files = "ANIb_percentage_identity.tab", cutoffs = 0.9)
 
-#Example 2
+#Example 1.2
+percentage <- read.table(file = "ANIb_percentage_identity.tab", header = T, row.names = 1, sep = "\t")
+basicResult1.2 <- prokluster(files = percentage, cutoffs = 0.9)
+
+#Example 2.1
 files <- c("ANIb_percentage_identity.tab", "ANIb_alignment_coverage.tab")
 thresholds <- c(0.95, 0.70)
-renamedResults1 <- prokluster(filenames = files, cutoffs = thresholds, nodesDictionary = "dictionary.tab", filterRemoveIsolated = TRUE)
+renamedResults1.1 <- prokluster(files = files, cutoffs = thresholds, nodesDictionary = "dictionary.tab", filterRemoveIsolated = TRUE)
+
+#Example 2.2
+coverage <- read.table(file = "ANIb_alignment_coverage.tab", header = T, row.names = 1, sep = "\t")
+filesList <- list(percentage, coverage)
+basicResult2.2 <- prokluster(files = filesList, cutoffs = thresholds)
+
+#Example 3
+renamedResults2 <- prokluster(files = files, cutoffs = thresholds, nodesDictionary = "dictionary.tab", filterDifferentNamesConnected = TRUE)
 
 #Example 4
 nodesNames <- read.table(file= "dictionary.tab", sep = "\t", header = F, stringsAsFactors=FALSE)
-renamedResults3 <- prokluster(filenames = files, cutoffs = thresholds, nodesPreviousNames = nodesNames$V1, nodesTranslatedNames = nodesNames$V2, filterSameNamesNotConnected = T)
-
-#Example 5
-files <- c("ANIb_percentage_identity.tab", "ANIb_alignment_coverage.tab")
-thresholds <- c(0.95, 0.70)
-results <- prokluster(filenames = files, cutoffs = thresholds, nodesDictionary = "dictionary.tab")
-plottedD3 <- plotc(results$graph)
+renamedResults3 <- prokluster(files = files, cutoffs = thresholds, nodesPreviousNames = nodesNames$V1, nodesTranslatedNames = nodesNames$V2, filterSameNamesNotConnected = T)
 ```
-
 
 ### Workflow
 
@@ -69,3 +74,7 @@ A) The average of each pair from the pairwise input matrix/matrices is/are obtai
 
 B) Overview of the hierarchical-based clustering approach. These approaches return tree-shaped diagrams with non-overlapping clusters.
 
+### Citation
+If you use ProKlust in your research please cite:
+
+ Volpiano, C.G., Sant'Anna, F.H., Ambrosini, A., São José, J.F.B., Beneduzi, A., Whitman, W.B., Souza, E.M., Lisboa, B.B., Vargas, L.K. and Passaglia, L.M.P., 2021. Genomic metrics applied to _Rhizobiales_ (_Hyphomicrobiales_): species reclassification, identification of unauthentic genomes and false type strains. Frontiers in Microbiology, 12. https://doi.org/10.3389/fmicb.2021.614957
