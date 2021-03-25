@@ -77,4 +77,4 @@ B) Overview of the hierarchical-based clustering approach. These approaches retu
 ### Citation
 If you use ProKlust in your research please cite:
 
- Volpiano, C.G., Sant'Anna, F.H., Ambrosini, A., São José, J.F.B., Beneduzi, A., Whitman, W.B., Souza, E.M., Lisboa, B.B., Vargas, L.K. and Passaglia, L.M.P., 2021. Genomic metrics applied to _Rhizobiales_ (_Hyphomicrobiales_): species reclassification, identification of unauthentic genomes and false type strains. Frontiers in Microbiology, 12. https://doi.org/10.3389/fmicb.2021.614957
+>Volpiano, C.G., Sant'Anna, F.H., Ambrosini, A., São José, J.F.B., Beneduzi, A., Whitman, W.B., Souza, E.M., Lisboa, B.B., Vargas, L.K. and Passaglia, L.M.P., 2021. Genomic metrics applied to _Rhizobiales_ (_Hyphomicrobiales_): species reclassification, identification of unauthentic genomes and false type strains. Frontiers in Microbiology, 12. https://doi.org/10.3389/fmicb.2021.614957
