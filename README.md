@@ -19,7 +19,16 @@ library(ProKlust)
 - Use function plotc to plot.
 
 #### Inputs
-- Obligatory tabbed-delimited pairwise identity/similarity matrix(ces) 
+- Obligatory tabbed-delimited pairwise identity/similarity matrix(ces). 
+
+**IMPORTANT:** if the user wishes to send a list of matrices (instead of a vector of file names), he **MUST** convert it to a list, e.g.
+```
+percentage <- read.table(file = "ANIb_percentage_identity.tab", header = T, row.names = 1, sep = "\t")
+coverage <- read.table(file = "ANIb_alignment_coverage.tab", header = T, row.names = 1, sep = "\t")
+filesList <- list(percentage, coverage)
+thresholds <- c(0.95, 0.70)
+basicResult <- prokluster(files = filesList, cutoffs = thresholds)
+```
 - Optional annotation table text file with a specific format: each line must be "(previous name)<Tab>(new name)<New Line>", where (previous name) and (new name) can be alphanumeric and some special characters.
 
 #### Filters
