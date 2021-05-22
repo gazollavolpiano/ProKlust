@@ -28,6 +28,7 @@ coverage <- read.table(file = "ANIb_alignment_coverage.tab", header = T, row.nam
 filesList <- list(percentage, coverage)
 thresholds <- c(0.95, 0.70)
 basicResult <- prokluster(files = filesList, cutoffs = thresholds)
+plotc(basicResult$graph)
 ```
 - Optional annotation table text file with a specific format: each line must be "(previous name)<Tab>(new name)<New Line>", where (previous name) and (new name) can be alphanumeric and some special characters.
 
@@ -50,6 +51,8 @@ A genome/gene that is part of a component does not necessarily share identity/si
 ```
 #Example 1.1
 basicResult1.1 <- prokluster(files = "ANIb_percentage_identity.tab", cutoffs = 0.9)
+basicResult1.1
+plotc(basicResult1.1$graph)
 
 #Example 1.2
 percentage <- read.table(file = "ANIb_percentage_identity.tab", header = T, row.names = 1, sep = "\t")
@@ -100,6 +103,7 @@ identity.sorted[,1] <- NULL
 
 basicResult <- prokluster(file = identity.sorted, cutoffs = 95)
 basicResult
+plotc(basicResult$graph)
 ```
 ### Workflow
 
