@@ -19,7 +19,7 @@ library(ProKlust)
 - Use function plotc to plot.
 
 #### Inputs
-- Obligatory tabbed-delimited pairwise identity/similarity matrix(ces). 
+- Obligatory tabbed-delimited pairwise identity/similarity matrix(ces), such as the ones generated with pyANI.
 
 **IMPORTANT:** if the user wishes to send a list of matrices (instead of a vector of file names), he **MUST** convert it to a list, e.g.
 ```
@@ -73,6 +73,34 @@ nodesNames <- read.table(file= "dictionary.tab", sep = "\t", header = F, strings
 renamedResults3 <- prokluster(files = files, cutoffs = thresholds, nodesPreviousNames = nodesNames$V1, nodesTranslatedNames = nodesNames$V2, filterSameNamesNotConnected = T)
 ```
 
+#### Example for [FastANI](https://github.com/ParBLiSS/FastANI):
+  
+```
+$ cd bins #dir with genomes
+$ mkdir out
+$ ls *fna > list
+$ mv list out
+$ for f in *fna; do fastANI -q "${f}" --rl out/list -o "${f}.fastANI" --minFraction 0; mv "${f}.fastANI" out; done
+$ cd out/
+$ cat *ANI > fastANIout.txt
+```
+
+Generating a tabbed-delimited "pairwise" identity matrix on R:
+```
+library(ProKlust)
+library(tidyr)
+
+# Importing fastANI results
+identity <- (read.table(file = "fastANIout.txt", sep = "\t")) [1:3]
+identity <- pivot_wider(identity, names_from =V1, values_from = V3)
+identity <- as.data.frame(identity)
+rownames(identity) <- identity$V2
+identity.sorted <- identity[order(identity["V2"]),]
+identity.sorted[,1] <- NULL
+
+basicResult <- prokluster(file = identity.sorted, cutoffs = 95)
+basicResult
+```
 ### Workflow
 
 
